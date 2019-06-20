@@ -84,11 +84,11 @@ def get_onoff_data(c, wpm, deviation):
 
 def generate_seq(seq_length, framerate=FRAMERATE):
     # Words per minute
-    wpm       = random.uniform(10,  40.0)
+    wpm       = random.uniform(10,  12.0)
     # Error in timing
     deviation = random.uniform(0.0,  0.2)
     # White noise volume
-    wnvol     = random.uniform(0.3,  4.0)
+    wnvol     = random.uniform(0.3,  1.0)
     # QSB volume: 0=no qsb, 1: full silencing QSB
     qsbvol    = random.uniform(0.0,  0.7)
     # QSB frequency in Hertz
@@ -96,7 +96,7 @@ def generate_seq(seq_length, framerate=FRAMERATE):
     # Signal volume
     sigvol    = random.uniform(1.0,  4.0)
     # Signal frequency
-    sigf      = random.uniform(500.0, 700.0)
+    sigf      = random.uniform(500.0, 510.0)
     # Signal phase
     phase     = random.uniform(0.0,  framerate / sigf)
     # Filter lower cutoff
