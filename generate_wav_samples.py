@@ -94,7 +94,7 @@ def generate_seq(seq_length, framerate=FRAMERATE):
     # QSB frequency in Hertz
     qsbf      = random.uniform(0.1,  0.7)
     # Signal volume
-    sigvol    = random.uniform(1.0,  4.0)
+    sigvol    = random.uniform(1.0,  1.0)
     # Signal frequency
     sigf      = random.uniform(500.0, 510.0)
     # Signal phase
@@ -241,13 +241,13 @@ if __name__ == "__main__":
             n = w*i//batch_size
             sys.stdout.write("\r[%s>%s] %4d/%4d  " % ("="*n, " "*(w-n), i, batch_size))
             sys.stdout.flush()
-            filename = dirname + '/%03d.wav' % i
+            filename = dirname + f'/{i}.wav'
 
             audio, characters = generate_seq(seq_length)
 
             scipy.io.wavfile.write(filename, FRAMERATE, audio)
 
-            with open(dirname + '/%03d.txt' % i, 'w') as f:
+            with open(dirname + f'/{i}.txt', 'w') as f:
                 f.write('\n'.join(map(lambda x: x[0] + ',' + str(x[1]), characters)))
 
             with open(dirname + '/config.txt', 'w') as f:
