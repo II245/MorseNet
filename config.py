@@ -11,13 +11,14 @@ FFT_SIZE = 128 # 62.5Hz wide bins
 CHUNK = 256
 
 # The size of a sample in chunks
-SEQ_LENGTH = (FRAMERATE * 12) // CHUNK * CHUNK
+SEQ_LENGTH = (FRAMERATE * 5) // CHUNK * CHUNK
 TIMESTEPS = SEQ_LENGTH // CHUNK
 
 # The character set in canonical order
 #MORSE_CHR = [' ','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9', '\0']
 #MORSE_CHR = [' ', '0','1','2','3','4','5','6','7','8','9', '\0']
-MORSE_CHR = [' ', 'E', 'T', '\0']
+#MORSE_CHR = [' ', 'T', 'E', '\0']
+MORSE_CHR = [' ', 'T', 'E', '\0']
 
 NUM_CLASSES = len(MORSE_CHR)
 

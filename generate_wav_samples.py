@@ -60,7 +60,7 @@ def qsb(frames, vol, f):
 
 # Returns a random morse character
 def get_next_character():
-    return random.choice(MORSE_CHR[:-1] + [' '] * 5)
+    return random.choice(MORSE_CHR[1:-1] )#+ [' '] * 1
 
 # Returns: ([(1/0, duration), ...], total length)
 def get_onoff_data(c, wpm, deviation):
@@ -94,7 +94,7 @@ def generate_seq(seq_length, framerate=FRAMERATE):
     # QSB frequency in Hertz
     qsbf      = random.uniform(0.1,  0.7)
     # Signal volume
-    sigvol    = random.uniform(1.0,  1.0)
+    sigvol    = random.uniform(2.0,  3.0)
     # Signal frequency
     sigf      = random.uniform(500.0, 510.0)
     # Signal phase
@@ -140,6 +140,10 @@ def generate_seq(seq_length, framerate=FRAMERATE):
             audio[i:i+p[1]] = p[0]
             i += p[1]
         characters.append((c, i / float(framerate)))
+
+    characters = [characters[0], characters[-1]]
+    #characters = [e for e in characters if e]
+    #print(characters)
 
     # Set up the bandpass filter
     fil_lowpass = sig.firwin(taps, f1/(framerate/2))
