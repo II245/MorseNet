@@ -61,7 +61,7 @@ def qsb(frames, vol, f):
 
 # Returns a random morse character
 def get_next_character():
-    return random.choice(MORSE_CHR[1:-1] )#+ [' '] * 1
+    return random.choice(MORSE_CHR[0:-1] )#+ [' '] * 1
 
 # Returns: ([(1/0, duration), ...], total length)
 def get_onoff_data(c, wpm, deviation):
@@ -143,7 +143,7 @@ def generate_seq(seq_length, framerate=FRAMERATE):
         characters.append((c, i / float(framerate)))
 
     #print(characters)
-    characters = [c for c in characters if c[0] != MORSE_CHR[0]]
+    #characters = [c for c in characters if c[0] != MORSE_CHR[0]]
     #characters = characters[:2]
     #print(characters)
 
