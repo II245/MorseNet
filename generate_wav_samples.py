@@ -3,6 +3,7 @@
 
 from __future__ import generator_stop
 
+import librosa
 import numpy as np
 import random
 import scipy.signal as sig
@@ -84,7 +85,7 @@ def get_onoff_data(c, wpm, deviation):
 
 def generate_seq(seq_length, framerate=FRAMERATE):
     # Words per minute
-    wpm       = random.uniform(10,  12.0)
+    wpm       = random.uniform(20,  21.0)
     # Error in timing
     deviation = random.uniform(0.0,  0.2)
     # White noise volume
@@ -141,7 +142,13 @@ def generate_seq(seq_length, framerate=FRAMERATE):
             i += p[1]
         characters.append((c, i / float(framerate)))
 
-    characters = [characters[0], characters[-1]]
+    #print(characters)
+    characters = [c for c in characters if c[0] != MORSE_CHR[0]]
+    #characters = characters[:2]
+    #print(characters)
+
+    #characters = [characters[0]] if len(characters) == 1 else [characters[0], characters[1]]
+
     #characters = [e for e in characters if e]
     #print(characters)
 
@@ -217,7 +224,9 @@ def seq_generator(seq_length, framerate, chunk):
         audio, labels = q.get()
 
         audio = np.reshape(audio,  (seq_length // chunk, chunk))
-        audio = (audio - np.mean(audio)) / np.std(audio) # Normalization
+
+        #audio = (audio - np.mean(audio)) / np.std(audio) # Normalization
+        audio = audio.astype(np.float32)
 
         labels = np.asarray([MORSE_CHR.index(l[0]) for l in labels])
 
