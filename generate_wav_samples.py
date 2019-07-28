@@ -61,7 +61,7 @@ def qsb(frames, vol, f):
 
 # Returns a random morse character
 def get_next_character():
-    return random.choice(MORSE_CHR[0:-1] )#+ [' '] * 1
+    return random.choice(MORSE_CHR[0:-1] + [' '] * 2)
 
 # Returns: ([(1/0, duration), ...], total length)
 def get_onoff_data(c, wpm, deviation):
@@ -91,7 +91,7 @@ def generate_seq(seq_length, framerate=FRAMERATE):
     # White noise volume
     wnvol     = random.uniform(0.3,  1.0)
     # QSB volume: 0=no qsb, 1: full silencing QSB
-    qsbvol    = random.uniform(0.0,  0.7)
+    qsbvol    = random.uniform(0.0,  0.2)
     # QSB frequency in Hertz
     qsbf      = random.uniform(0.1,  0.7)
     # Signal volume
