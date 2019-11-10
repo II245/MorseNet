@@ -86,7 +86,7 @@ def get_onoff_data(c, wpm, deviation):
 
 def generate_seq(seq_length, framerate=FRAMERATE):
     # Words per minute
-    wpm       = random.uniform(15,  31.0)
+    wpm       = random.uniform(15,  16.0)
     # Error in timing
     deviation = random.uniform(0.0,  0.2)
     # Signal volume
