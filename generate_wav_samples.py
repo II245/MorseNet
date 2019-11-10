@@ -7,6 +7,7 @@ import librosa
 import numpy as np
 import random
 import scipy.signal as sig
+import time
 
 from multiprocessing import Process, Queue
 
@@ -85,17 +86,17 @@ def get_onoff_data(c, wpm, deviation):
 
 def generate_seq(seq_length, framerate=FRAMERATE):
     # Words per minute
-    wpm       = random.uniform(20,  21.0)
+    wpm       = random.uniform(15,  31.0)
     # Error in timing
     deviation = random.uniform(0.0,  0.2)
+    # Signal volume
+    sigvol    = random.uniform(1.0,  4.0)
     # White noise volume
-    wnvol     = random.uniform(0.3,  1.0)
+    wnvol     = random.uniform(0.1 * sigvol,  0.3 * sigvol)
     # QSB volume: 0=no qsb, 1: full silencing QSB
-    qsbvol    = random.uniform(0.0,  0.2)
+    qsbvol    = random.uniform(0.0,  0.3)
     # QSB frequency in Hertz
     qsbf      = random.uniform(0.1,  0.7)
-    # Signal volume
-    sigvol    = random.uniform(2.0,  3.0)
     # Signal frequency
     sigf      = random.uniform(500.0, 510.0)
     # Signal phase
@@ -194,49 +195,61 @@ def generate_seq(seq_length, framerate=FRAMERATE):
 
     return s, characters
 
-# List of worker processes
-processes = []
 
-# A generator yielding an audio array, and indices and lables for
-# building a sparsetensor describing labels for CTC functions
-def seq_generator(seq_length, framerate, chunk):
-    global processes
+class DataGenerator:
+    def __init__(self):
+        self.processes = []
+        self.queue = Queue(10)
+        self.threads_count = 4
 
-    for p in processes:
-        p.terminate()
-        p.join()
-    processes = []
+    # A generator yielding an audio array, and indices and lables for
+    # building a sparsetensor describing labels for CTC functions
+    def seq_generator(self, seq_length, framerate, chunk, sr, mel_count):
+        def do_work():
+            while True:
+                audio, labels = generate_seq(seq_length, framerate)
+                audio = np.reshape(audio, (seq_length // chunk, chunk))
+                # audio = (audio - np.mean(audio)) / np.std(audio) # Normalization
+                audio = audio.astype(np.float32)
+                mel = self.get_wave_mel_features(audio, sr, mel_count)
+                labels = np.asarray([MORSE_CHR.index(l[0]) for l in labels])
 
-    q = Queue(10)
+                while self.queue.full():
+                    time.sleep(0.0100)
 
-    def dowork():
+                self.queue.put((audio, labels, mel))
+
+        self.start_threads(do_work)
+
         while True:
-            q.put(generate_seq(seq_length, framerate))
+            audio, labels, mel = self.queue.get()
 
-    for i in range(2):
-        p = Process(target=dowork)
-        p.daemon=True
-        processes.append(p)
-        p.start()
+            label_indices = []
+            label_values = []
+            for i, value in enumerate(labels):
+                label_indices.append([i])
+                label_values.append(value)
 
-    while True:
-        #audio, labels = generate_seq(seq_length, framerate)
-        audio, labels = q.get()
+            yield (audio, label_indices, label_values, [len(labels)], mel)
 
-        audio = np.reshape(audio,  (seq_length // chunk, chunk))
+    def start_threads(self, do_work):
+        if len(self.processes) != self.threads_count:
+            for _ in range(self.threads_count):
+                p = Process(target=do_work)
+                p.daemon = True
+                self.processes.append(p)
+                p.start()
 
-        #audio = (audio - np.mean(audio)) / np.std(audio) # Normalization
-        audio = audio.astype(np.float32)
+    @staticmethod
+    def get_wave_mel_features(wave, sr, mel_count):
+        wave = wave.reshape(SEQ_LENGTH)
+        wave = librosa.util.normalize(wave)
+        mel = librosa.feature.melspectrogram(wave, sr=sr, n_fft=250, n_mels=mel_count, hop_length=200, power=2)
+        mel = mel.T
+        mel = mel / np.max(mel)
+        # mel = np.round(mel, decimals=4)
+        return mel
 
-        labels = np.asarray([MORSE_CHR.index(l[0]) for l in labels])
-
-        label_indices = []
-        label_values = []
-        for i, value in enumerate(labels):
-            label_indices.append([i])
-            label_values.append(value)
-
-        yield (audio, label_indices, label_values, [len(labels)])
 
 if __name__ == "__main__":
     import os
