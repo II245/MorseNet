@@ -86,19 +86,19 @@ def get_onoff_data(c, wpm, deviation):
 
 def generate_seq(seq_length, framerate=FRAMERATE):
     # Words per minute
-    wpm       = random.uniform(15,  16.0)
+    wpm       = random.uniform(5,  25.0)
     # Error in timing
-    deviation = random.uniform(0.0,  0.2)
+    deviation = random.uniform(0.0,  0.1)
     # Signal volume
-    sigvol    = random.uniform(1.0,  4.0)
+    sigvol    = random.uniform(0.1,  4.0)
     # White noise volume
-    wnvol     = random.uniform(0.1 * sigvol,  0.3 * sigvol)
+    wnvol     = random.uniform(0.05 * sigvol,  0.5 * sigvol)
     # QSB volume: 0=no qsb, 1: full silencing QSB
-    qsbvol    = random.uniform(0.0,  0.3)
+    qsbvol    = random.uniform(0.01,  0.7)
     # QSB frequency in Hertz
-    qsbf      = random.uniform(0.1,  0.7)
+    qsbf      = random.uniform(0.1,  1.0)
     # Signal frequency
-    sigf      = random.uniform(500.0, 510.0)
+    sigf      = random.uniform(500.0, 800.0)
     # Signal phase
     phase     = random.uniform(0.0,  framerate / sigf)
     # Filter lower cutoff
@@ -282,7 +282,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument(
-        'dirname', metavar='DIRNAME', type=str,
+        'dirname', metavar='DIRNAME', type=str, default='generated',
         help='name of the directory into wich the output .wav files are to be saved'
     )
     parser.add_argument(
